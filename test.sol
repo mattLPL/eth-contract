@@ -7,7 +7,7 @@ import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 contract APIConsumer is ChainlinkClient {
   
     bytes32 public data;
-    string public bar;
+    string public responseString;
     address private oracle;
     bytes32 private jobId;
     uint256 private fee;
@@ -66,10 +66,23 @@ contract APIConsumer is ChainlinkClient {
     /**
      * Receive the response in the form of uint256
      */ 
+     
+    function sendEther(address payable recipient) external {
+        recipient.transfer(.01 ether);
+
+    }
+    
     function fulfill(bytes32 _requestId, bytes32 _data) public recordChainlinkFulfillment(_requestId)
     {
         data = _data;
-        bar = string(abi.encodePacked(data));
-    } 
+        responseString = string(abi.encodePacked(data));
+        // converts strings to bytes then checks if response from API == 'Lebron'.
+
+        if(keccak256(abi.encodePacked((responseString))) == keccak256(abi.encodePacked(('Lebron')))){
+            this.sendEther(0xCdd3e25bCaA12BE76fB6B96755039Ac558D5C7Ae);
+        }
+    }
+    
+
 
 }
